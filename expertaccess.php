@@ -7,24 +7,31 @@ function expertaccess_civicrm_aclWhereClause( $type, &$tables, &$whereTables, &$
     return;
   }
   
-  if ($type != CRM_Core_Permission::VIEW) {
-    return;
+  if ($type == CRM_Core_Permission::VIEW) {  
+    $config = CRM_Expertaccess_Config::singleton();
+    $relation_table = 'civicrm_relationship';
+    $tables[$relation_table] = $whereTables[$relation_table] = "LEFT JOIN `civicrm_relationship` `expert_rel` ON `contact_a`.`id` = `expert_rel`.`contact_id_a`";
+    $clause = "(
+        `expert_rel`.`case_id` IS NOT NULL 
+        AND `expert_rel`.`relationship_type_id` = '".$config->getExpertRelationshipType('id')."'
+        AND `expert_rel`.`is_active` = '1' 
+        AND (`expert_rel`.`start_date` IS NULL OR `expert_rel`.`start_date` <= NOW()) 
+        AND (`expert_rel`.`end_date` IS NULL OR `expert_rel`.`end_date` >= NOW()) 
+        AND `expert_rel`.`contact_id_b` = '".$contactID."') OR (`contact_a`.`id` = '".$contactID."')";
+    if (!empty($where)) {
+      $where = "(".$where . " OR ".$clause.")";
+    } else {
+      $where = $clause;
+    }
   }
   
-  $config = CRM_Expertaccess_Config::singleton();
-  $relation_table = 'civicrm_relationship';
-  $tables[$relation_table] = $whereTables[$relation_table] = "LEFT JOIN `civicrm_relationship` `expert_rel` ON `contact_a`.`id` = `expert_rel`.`contact_id_a`";
-  $clause = "(
-      `expert_rel`.`case_id` IS NOT NULL 
-      AND `expert_rel`.`relationship_type_id` = '".$config->getExpertRelationshipType('id')."'
-      AND `expert_rel`.`is_active` = '1' 
-      AND (`expert_rel`.`start_date` IS NULL OR `expert_rel`.`start_date` <= NOW()) 
-      AND (`expert_rel`.`end_date` IS NULL OR `expert_rel`.`end_date` >= NOW()) 
-      AND `expert_rel`.`contact_id_b` = '".$contactID."')";
-  if (!empty($where)) {
-    $where = "(".$where . " OR ".$clause.")";
-  } else {
-    $where = $clause;
+  if ($type == CRM_Core_Permission::EDIT) {
+    $clause = "(`contact_a`.`id` = '".$contactID."')";
+    if (!empty($where)) {
+      $where = "(".$where . " OR ".$clause.")";
+    } else {
+      $where = $clause;
+    }
   }
 }
 
