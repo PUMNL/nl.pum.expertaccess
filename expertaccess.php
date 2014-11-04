@@ -17,20 +17,31 @@ function expertaccess_civicrm_aclWhereClause( $type, &$tables, &$whereTables, &$
         AND `expert_rel`.`is_active` = '1' 
         AND (`expert_rel`.`start_date` IS NULL OR `expert_rel`.`start_date` <= NOW()) 
         AND (`expert_rel`.`end_date` IS NULL OR `expert_rel`.`end_date` >= NOW()) 
-        AND `expert_rel`.`contact_id_b` = '".$contactID."') OR (`contact_a`.`id` = '".$contactID."')";
+        AND `expert_rel`.`contact_id_b` = '".$contactID."') OR (`contact_a`.`id` = '".$contactID."' AND `contact_a`.`contact_sub_type` LIKE '%".CRM_Core_DAO::VALUE_SEPARATOR."Expert".CRM_Core_DAO::VALUE_SEPARATOR."%')";
     if (!empty($where)) {
       $where = "(".$where . " OR ".$clause.")";
     } else {
       $where = $clause;
     }
   }
-  
-  if ($type == CRM_Core_Permission::EDIT) {
-    $clause = "(`contact_a`.`id` = '".$contactID."')";
-    if (!empty($where)) {
-      $where = "(".$where . " OR ".$clause.")";
-    } else {
-      $where = $clause;
+}
+
+/** 
+ * Place a link to edit  portal profile for expert
+ * 
+ * Implementation of hook_civicrm_summary
+ * 
+ * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_summary
+ */
+function expertaccess_civicrm_pageRun(&$page) {
+  if ($page instanceof CRM_Contact_Page_View_Summary) {
+    $portalProfileLink = new CRM_Expertaccess_PortalProfileLink($page->getVar('_contactId'));
+    if ($portalProfileLink->userIsExpert()) {
+      CRM_Core_Region::instance('page-body')->add(array(
+        'template' => "CRM/Contact/Page/View/Summary/portal_profile.tpl"
+      ));
+      $smarty = CRM_Core_Smarty::singleton();
+      $smarty->assign('link_to_portal_profile', $portalProfileLink->getLink());
     }
   }
 }
