@@ -2,6 +2,20 @@
 
 require_once 'expertaccess.civix.php';
 
+function expertaccess_civicrm_buildForm($formName, &$form) {
+  if ($formName == 'CRM_Case_Form_Case' || $formName == 'CRM_Case_Form_EditClient') {
+   //deny access to the expert application case when the logged in user is the client of the case
+    CRM_Expertaccess_DenyAccessNewCase::buildForm($formName, $form);
+  }
+}
+
+function expertaccess_civicrm_permission(&$permissions) {
+  $prefix = ts('CiviCase') . ': '; // name of extension or module
+	$permissions = array(
+		'create new case' => $prefix . ts('Create new Case'),
+	); // NB: note the convention of using delete in ComponentName, plural for edits
+}
+
 function expertaccess_civicrm_aclWhereClause( $type, &$tables, &$whereTables, &$contactID, &$where ) {
   if ( ! $contactID ) {
     return;
