@@ -9,13 +9,6 @@ function expertaccess_civicrm_buildForm($formName, &$form) {
   }
 }
 
-function expertaccess_civicrm_permission(&$permissions) {
-  $prefix = ts('CiviCase') . ': '; // name of extension or module
-	$permissions = array(
-		'create new case' => $prefix . ts('Create new Case'),
-	); // NB: note the convention of using delete in ComponentName, plural for edits
-}
-
 function expertaccess_civicrm_aclWhereClause( $type, &$tables, &$whereTables, &$contactID, &$where ) {
   if ( ! $contactID ) {
     return;

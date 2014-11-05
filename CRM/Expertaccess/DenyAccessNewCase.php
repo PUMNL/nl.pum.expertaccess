@@ -8,7 +8,7 @@ class CRM_Expertaccess_DenyAccessNewCase {
       return;
     }
     
-    if (CRM_Core_Permission::check('create new case')) {
+    if (CRM_Core_Permission::check('add cases')) {
       $hasAccess = true;
     }
     
