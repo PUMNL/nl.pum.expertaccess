@@ -31,6 +31,17 @@ function expertaccess_civicrm_aclWhereClause( $type, &$tables, &$whereTables, &$
       $where = $clause;
     }
   }
+} 
+
+function expertaccess_civicrm_aclGroup( $type, $contactID, $tableName, &$allGroups, &$currentGroups ) {
+  if ($type == CRM_Core_Permission::VIEW && $tableName == 'civicrm_custom_group') {
+    foreach($allGroups as $key => $group) {
+      if (!is_array($currentGroups)) {
+        $currentGroups = array();
+      }
+      $currentGroups[] = $key;
+    }
+  }
 }
 
 /** 
@@ -50,6 +61,11 @@ function expertaccess_civicrm_pageRun(&$page) {
       $smarty = CRM_Core_Smarty::singleton();
       $smarty->assign('link_to_portal_profile', $portalProfileLink->getLink());
     }
+  }
+  
+  if ($page instanceof CRM_Contact_Page_View_CustomData) {
+    //deny access to edit own custom fields as expert
+    CRM_Expertaccess_DenyAccessCustomFields::pageRun($page);
   }
 }
 
