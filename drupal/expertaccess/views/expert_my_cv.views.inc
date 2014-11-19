@@ -1,5 +1,7 @@
 <?php
 
+$expert_data = civicrm_api3('CustomGroup', 'getsingle', array('name' => 'expert_data'));
+$generic_skills = civicrm_api3('CustomField', 'getvalue', array('name' => 'generic_skills', 'return' => 'column_name', 'custom_group_id' => $expert_data['id']));
 $expert_rel_type_id = civicrm_api3('RelationshipType', 'getvalue', array('name_a_b' => 'Expert', 'return' => 'id'));
 
 $view = new view();
@@ -57,6 +59,13 @@ $handler->display->display_options['fields']['nothing']['alter']['make_link'] = 
 $handler->display->display_options['fields']['nothing']['alter']['path'] = 'expert/my-cv/edit';
 $handler->display->display_options['fields']['nothing']['alter']['absolute'] = TRUE;
 $handler->display->display_options['fields']['nothing']['element_label_colon'] = FALSE;
+/* Field: CiviCRM Custom: Expert Data: Generic Skills */
+$handler->display->display_options['fields']['generic_skilss_568']['id'] = 'generic_skilss_568';
+$handler->display->display_options['fields']['generic_skilss_568']['table'] = $expert_data['table_name'];
+$handler->display->display_options['fields']['generic_skilss_568']['field'] = $generic_skills;
+$handler->display->display_options['fields']['generic_skilss_568']['label'] = 'Generic skills';
+$handler->display->display_options['fields']['generic_skilss_568']['element_label_type'] = 'strong';
+$handler->display->display_options['fields']['generic_skilss_568']['element_label_colon'] = FALSE;
 /* Field: Languages */
 $handler->display->display_options['fields']['view_1']['id'] = 'view_1';
 $handler->display->display_options['fields']['view_1']['table'] = 'views';
