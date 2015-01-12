@@ -30,7 +30,7 @@ class CRM_Expertaccess_PortalProfileLink {
   public function getLink() {
     try {
       $uf = civicrm_api3('UFMatch', 'getsingle', array('contact_id' => $this->contact_id));
-      $url = url('user/'.$uf['uf_id'].'');
+      $url = url('user/'.$uf['uf_id'].'/edit/Name and Address');
       return $url;
     } catch (Exception $e) {
       return false;
