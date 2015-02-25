@@ -5,6 +5,7 @@ function expertaccess_views_api() {
 }
 
 function expertaccess_views_default_views() {
+  civicrm_initialize();
   $files = file_scan_directory(drupal_get_path('module', 'expertaccess'). '/views', '/.inc/');
   foreach ($files as $filepath => $file) {
     try {
